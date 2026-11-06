@@ -33,6 +33,7 @@ The notebook `05_machine_learning.ipynb` exports four CSV files that are importe
 
 ## Key results from the SQL queries
 - Default rate by latest repayment status: on time / no use 13.8%, 1 month late 33.9%, 2 months late 69.1%, 3+ months late 71.9%.
+- The prepared dataset was loaded into PostgreSQL using pgAdmin's Import/Export tool, into the table defined in `schema.sql`.
 - Default rate by credit limit band: 31.8% (up to 50,000) falling to 13.8% (above 270,000).
 - Defaulters skipped payments in 1.76 of 6 months on average, against 1.08 for non-defaulters, while their September bills were similar (48,509 vs 51,994).
 - Rule-based risk tiers: High 69.6%, Medium 34.0%, Low 12.7%. The Low tier still holds 42.2% of all defaulters, which motivates the machine learning in Phase 6.
