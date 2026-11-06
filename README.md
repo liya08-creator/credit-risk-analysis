@@ -1,9 +1,9 @@
-# credit-risk-analysis
+
 # Credit Risk Analysis and Credit Card Default Prediction
 
 An end-to-end data science project that analyses credit card customer data to understand why customers default and builds machine learning models to predict default on the next payment. It combines Python, PostgreSQL and Power BI, and was completed as a group project for the data science mentorship programme.
 
-**Team:** [Djou kenne Belviane Manuelle , Liya Eshetu,Sandra Keya]
+**Team:** [Djou kenne Belviane Manuelle, Liya Eshetu , Sandra Keya]
 
 ## Dataset
 
