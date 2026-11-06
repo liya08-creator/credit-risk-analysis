@@ -2,3 +2,11 @@ customers_for_db.csv
 credit_card_clean.csv
 credit_card_model.csv
 *.env
+train_set.csv
+test_set.csv
+model_comparison.csv
+model_comparison_cv.csv
+model_test_results.csv
+feature_importance.csv
+model_predictions.csv
+*.joblib
