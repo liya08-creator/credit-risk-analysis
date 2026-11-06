@@ -1,4 +1,4 @@
-# Phase 5: PostgreSQL database
+#  PostgreSQL database
 
 **Database:** `credit_risk_db` (PostgreSQL 18, managed with pgAdmin 4)
 
