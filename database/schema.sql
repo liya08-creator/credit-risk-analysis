@@ -74,3 +74,51 @@ CREATE TABLE customers (
     pay_amt6           INTEGER NOT NULL,
     default_next_month SMALLINT NOT NULL CHECK (default_next_month IN (0, 1))
 );
+
+-- ---------------------------------------------------------------------
+-- 3. Machine learning result tables (Phase 6), read by Power BI (Phase 7)
+--    Filled from the CSV files exported by notebook 05_machine_learning.
+--    Import order: model_comparison, model_test_results,
+--    feature_importance, model_predictions.
+-- ---------------------------------------------------------------------
+
+-- Cross-validated performance of the three models (5-fold, training set)
+CREATE TABLE model_comparison (
+    model_name       VARCHAR(30) PRIMARY KEY,
+    roc_auc          NUMERIC(6,4),
+    recall           NUMERIC(6,4),
+    precision_score  NUMERIC(6,4),
+    f1_score         NUMERIC(6,4),
+    accuracy         NUMERIC(6,4)
+);
+
+-- Final test-set performance of the selected model, with confusion matrix
+CREATE TABLE model_test_results (
+    model_name       VARCHAR(30) PRIMARY KEY,
+    roc_auc          NUMERIC(6,4),
+    recall           NUMERIC(6,4),
+    precision_score  NUMERIC(6,4),
+    f1_score         NUMERIC(6,4),
+    accuracy         NUMERIC(6,4),
+    true_negatives   INTEGER,
+    false_positives  INTEGER,
+    false_negatives  INTEGER,
+    true_positives   INTEGER
+);
+
+-- Importance of each of the 28 features in the selected Random Forest
+CREATE TABLE feature_importance (
+    feature_name     VARCHAR(30) PRIMARY KEY,
+    importance       NUMERIC(8,6),
+    importance_rank  INTEGER
+);
+
+-- Predictions for the 6,000 test-set customers
+-- (customer_id = row number + 1 in the modelling data)
+CREATE TABLE model_predictions (
+    customer_id            INTEGER PRIMARY KEY REFERENCES customers(customer_id),
+    actual_default         SMALLINT CHECK (actual_default IN (0, 1)),
+    predicted_probability  NUMERIC(7,6),
+    predicted_default      SMALLINT CHECK (predicted_default IN (0, 1)),
+    outcome                VARCHAR(20)
+);

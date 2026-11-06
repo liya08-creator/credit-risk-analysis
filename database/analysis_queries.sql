@@ -260,8 +260,47 @@ FROM vw_default_by_segment
 WHERE dimension IN ('Gender', 'Risk tier')
 ORDER BY dimension, segment;
 
--- C5. Final inventory. Expected: 4 base tables (customers, dim_education, dim_marriage, dim_sex) and 2 views
+-- C5. Final inventory. Expected: 8 base tables (customers, dim_education, dim_marriage, dim_sex,
+--     feature_importance, model_comparison, model_predictions, model_test_results) and 2 views
 SELECT table_name, table_type
 FROM information_schema.tables
 WHERE table_schema = 'public'
 ORDER BY table_type, table_name;
+
+-- ===================== D. CHECKS FOR THE MODEL RESULT TABLES ==========
+
+-- D1. Row counts. Expected: model_comparison 3, model_test_results 1, feature_importance 28, model_predictions 6000
+SELECT 'model_comparison' AS table_name, COUNT(*) AS rows FROM model_comparison
+UNION ALL
+SELECT 'model_test_results', COUNT(*) FROM model_test_results
+UNION ALL
+SELECT 'feature_importance', COUNT(*) FROM feature_importance
+UNION ALL
+SELECT 'model_predictions', COUNT(*) FROM model_predictions;
+
+-- D2. Model comparison (5-fold cross-validation on the training set).
+--     Expected ROC-AUC: Random Forest 0.7851, Decision Tree 0.7688, Logistic Regression 0.7596
+SELECT * FROM model_comparison ORDER BY roc_auc DESC;
+
+-- D3. Final test-set results of the selected model.
+--     Expected: Random Forest | 0.7762 | 0.6225 | 0.4750 | 0.5388 | 0.7643 | TN 3760 | FP 913 | FN 501 | TP 826
+SELECT * FROM model_test_results;
+
+-- D4. Customer ID mapping: the actual labels in the predictions must agree with the customers table.
+--     Expected: 6000 | 6000 | 1327
+SELECT
+    COUNT(*)                                                    AS predictions,
+    SUM(CASE WHEN p.actual_default = c.default_next_month THEN 1 ELSE 0 END)
+                                                                AS labels_that_agree,
+    SUM(p.actual_default)                                       AS actual_defaults
+FROM model_predictions p
+JOIN customers c ON c.customer_id = p.customer_id;
+
+-- D5. Outcome counts. Expected: False negative 501, False positive 913, True negative 3760, True positive 826
+SELECT outcome, COUNT(*) AS customers
+FROM model_predictions
+GROUP BY outcome
+ORDER BY outcome;
+
+-- D6. Most important features. Expected: months_late and PAY_1 at about 0.206 in ranks 1 and 2
+SELECT * FROM feature_importance ORDER BY importance_rank LIMIT 5;
